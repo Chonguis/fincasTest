@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Free Wifi PR</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.css' type='text/css' />
+    <style>
+    #info {
+      display: block;
+      position: relative;
+      margin: 0px auto;
+      width: 50%;
+      padding: 10px;
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      text-align: center;
+      color: #222;
+      background: #fff;
+    }
+
+    #geocoder-container > div {
+        min-width:50%;
+        margin-left:25%;
+    }
+
+    .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+    </style>
+
+</head>
+<body>
+
+  <div id='map'></div>
+  <pre id='info'></pre>
+
+  <script>
+
+    // deleteUserData();
+
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic3Rvb3AtYWkiLCJhIjoiY2l5cDFxeW9nMDA3aDJxcGkydzZxam01NCJ9.zx4_TBlSKnZr35CVWqmO9w';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: [-66.0602, 18.4493],
+        zoom: 8
+    });
+
+    var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken
+    });
+
+    map.addControl(geocoder);
+
+    // Add geolocate control to the map.
+    map.addControl(new mapboxgl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    }));
+
+    map.on('mousemove', function (e) {
+      document.getElementById('info').innerHTML =
+        // e.point is the x, y coordinates of the mousemove event relative
+        // to the top-left corner of the map
+        JSON.stringify(e.point) + '<br />' +
+        // e.lngLat is the longitude, latitude geographical position of the event
+        JSON.stringify(e.lngLat);
+    });
+
+    map.on('load', function () {
+
+      // map.addSource("points", {
+      //     "type": "geojson",
+      //     "data": fincasPoints
+      // });
+      //
+      // map.addLayer({
+      //     "id": "pointsLayer",
+      //     "type": "symbol",
+      //     "source": "points",
+      //     // "paint": {
+      //     //   "circle-radius": 5,
+      //     //   "circle-color": "#007cbf"
+      //     // },
+      //     "layout": {
+      //       "icon-image": "{music}-15",
+      //       "icon-allow-overlap": true
+      //     }
+      // });
+
+      // Add a layer showing the places.
+      map.addLayer({
+          "id": "places",
+          "type": "symbol",
+          "source": {
+              "type": "geojson",
+              "data": {
+                  "type": "FeatureCollection",
+                  "features": [{
+                      "type": "Feature",
+                      "properties": {
+                          "description": "<strong>Make it Mount Pleasant</strong><p><a href=\"http://www.mtpleasantdc.com/makeitmtpleasant\" target=\"_blank\" title=\"Opens in a new window\">Make it Mount Pleasant</a> is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.0669, 18.4459]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Adjuntas",
+                          "description": "<p>El Huertito Milagroso Fernando Cuba y Nancy Maldonado Lechuga, celery, perejil, plantas medicinales, bok choi, acerolas, repollo, espinacas, arúgula y verduras. Carr. 518, Lago Garzas Adjuntas PR 787 829-0939 787241-5895. </p> <p>El Paraíso Nelson Monge Hortalizas de temporada, café, chinas, guineos, plátanos, malangas, ñame, plantas medicinales.Adjuntas, PR tazumaldm@gmail.com (787) 362-8800</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.7232, 18.1626]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Aguada",
+                          "description": "<p>                          Finca La Morena                            Nelson Moreno y Belmarie Bauer                            Certificada CNG                            Mandarinas, guineos, carambolas, limones, guayaba y farináceos.                            Aguada, PR                            fincalamorena@aol.com                            (787) 379•1538                          </p>                          <p>                          Jeanmarie Chocolat                          Juan Echevarría y María Méndez                          Producción de cacao y elaboración de chocolate artesanal.                          Aguada, PR                          juanmae856@gmail.com                          (787) 464•1100                          </p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.1743, 18.3601]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Aguadilla",
+                          "description": '<p> Crudus Iván Flores y Dillian García Repostería y deliciosas confecciones crudista con frutas, nueces y cacao local. Aguadilla, PR cruduspr@yahoo.com (787) 649•6790</p>' +
+                            ' <p> Finca Familiar Villa Pérez  Daisy Pérez Habichuelas, ajíes picantes, papaya, guineo, achiote. Aguadilla, PR deisiperez@yahoo.com (787) 891•8024 </p> ' +
+                            ' <p> La Tierra Prometida  José Rodríguez / Walter Rodríguez Lechugas mixtas, arúgula, bok choi, hierbas aromáticas, acelgas cebollines. Ofrecemos vivienda transitoria para personas sin hogar (deambulantes). Capacitamos a los participantes en agricultura ecológica.  Aguadilla, PR jor@latierraprometida.org www.latierraprometida.org/ (787) 882•3845  </p> ' +
+                            ' <p> Levain Artisan Breads José Rodríguez Panes artesanales con técnicas europeas: baguettes, ciobatta, focaccia, sourdough, pan integral multigranos y pan de aceitunas. Aguadilla, PR jor@levainartisanbreads.com (787) 658•6220 / (787) 717•7654 </p> ' +
+                            ' <p> Mermeladas Montemar Yulitza Nieves Certificada CNG Mermeladas de frutas tropicales, salsas, vinagretas y frutas deshidratadas. Aguadilla, PR pmontemar@gmail.com (787) 306•4382</p>'
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.1122, 18.4871]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Aguas Buenas",
+                          "description": "<p> Villa Sereno M.I. Suárez Germinados y alimentos crudos. Aguas Buenas, PR misuarez@organica3.com www.organica3.com (787) 725-7145</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1057, 18.2566]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Aibonito",
+                          "description": "<p>Finca Noriega Abei Noriega, Laura Morcilio y Raúl Noriega Plantas medicinales y vegetales. Se hacen entregas semanales de hierbas, vegetales y frutas a diferentes pueblos de la isla. Bo. Pasto Aibonito, PR lrviveros@yahoo.com (787) 735-1716 / (939) 258-8361 </p> <p>Siembra Tres Vidas Edwin Rosario y Ángel Jr. Rosario Certificada CNG Lechugas, arúgula, pepinillos, berenjenas, tomates, pimientos, ajíes, habichuelas tiernas, gandules, calabazas, perejil, albahaca, calabazines y hierbas.  Bo. Casto Aibonito, PR siembratresvidas@gmail.com www.siembratresvidas.blogspot.com (787) 431-8424</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.2661, 18.1393]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Añasco",
+                          "description": " <p> Hacienda Caribe* Elimarie Guzmán Plantas de vegetales, medicinales y semillas de papas. Añasco, PR hacienda.caribe@yahoo.com (787) 398•2042 </p> <p> La Casita de Enantes*  Érik Eugenio Collazo Santiago  Plantas, semillas, composta y cosechas variadas. Servicios y mantenimiento de huertos caseros y tu huerto en nuestra finca. Talleres agrícola-educativos. Añasco, PR lacasitadeenantes@gmail.com www.lacasitadeenantes.com (939) 325-4561 / (787) 405-7068 </p> <p> Vivero & Huertos Caseros Javier Santiago Plantas medicinales, culinarias, frutas y vegetales surtidos. Añasco, PR (787) 328•2532</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1393, 18.2818]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Arecibo",
+                          "description": "<p>Finca el Paraíso Jaime Jordán y Nina Craig Hojas mixtas (arúgula, bok choi, mitzuna), cítricos, pepinillos, ajíes, guineos, panas y yuca.  Bo. Rio Arriba Arecibo, PR ninamariacraig@gmail.com (787) 241-2501 </p> <p> Granja Urbana El Batey  Lisandra Santana Semillas orgánicas o ancestrales, plantas medicinales y hortalizas. Tenemos disponibles pollitos ornamentales y exóticos, huevos de gallinas felices (por temporada) libres de hormonas. No utilizamos semillas modificadas (GMO), pesticidas, yerbicidas ni hormonas de crecimiento en nuestras aves. Arecibo, PR desdelbatey@gmail.com (787) 248•5431</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.7193, 18.4684]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Bayamón",
+                          "description": "<p>R3solaris Rubén Román Miel, jalea real, plantas medicinales y culinarias, remedios botánicos y aceites terapeúticos. Bayamón, PR r3solaris@yahoo.com http://www.r3solaris.blogspot.com/ (787)610•2325</p>"
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1699, 18.3512]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Cabo Rojo",
+                          "description": "<p>Productos Sana, Inc. Sonia Carlo & Javier Blondet Certificada “USDA” Lechugas mixtas, tomates, hortalizas, plantas medicinales, teses y especies. Cabo Rojo, PR productossana@gmail.com www.productossana.com (787)557•0819 / (787)357•7313 </p> <p> Finca Agroforestal Shangrila Aida Toro Torres Frutas tropicales y artesanias. Cabo Rojo, PR (787)538•2098 </p> <p> Siembra para tod@s* Freddie O. Pérez Martínez  Vegetales, viandas, plantas medicinales y frutas. Cabo Rojo, PR ecoboriken@gmail.com (787)408•5466</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.1564, 18.0875]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Caguas",
+                          "description": "<p>Tierra de Luna  Alyn Bermúdez Plantas medicinales y culinarias, frutas, vegetales, hierbas secas y artesanías. Caguas, PR alyn@tierradeluna.com www.tierradeluna.com (787) 565•1739</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.0492, 18.2125]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Camuy",
+                          "description": "<p> Bikai Alimento que da vida Rolando Saavedra y Frances Candelario Berenjenas, tomates, pepinillos, lechugas, hojas mixtas, plátanos y plantas medicinales. Camuy, PR  rahua@live.com (787) 408•6426</p>" +
+                            "<p>Mi Casa Certificada USDA Luis Soto Yuca, parcha, maíz, lechugas, repollos, habichuelas y plantas medicinales. Camuy, PR (787) 898-5896 / (787) 306-3672</p> ",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.8590, 18.4252]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Ciales",
+                          "description": "<p>Finca Palenque Armando Carlo Asencio Cítricos, guineos, plátanos y arboles nativos, medicinales y frutales. Bo. Frontón Ciales, PR siempreverdepr@gmail.com info@expedicionespalenque.com www.expedicionespalenque.com (787) 407-2858</p><p> Hacienda Niña Grande Aurora Sastre y Javier A. Rivera Guineos niños, manzanos, flores para corte follaje y semillas orgánicas. Materiales para floristerías y eventos especiales. Bo. Cialitos haninagrande@hotmail.com /   ortegon@coqui.net (939) 247-2970 / (787)375-4798</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.5145, 18.2908]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Cidra",
+                          "description": "<p>Quinta del Guamá Marta Calero y Jaime Bofill (Naturismo Tropical, Dr.Keshava Bhat) Plantas y árboles medicinales, ben (moringa), paraíso (alelalaio), cúrcuma, jengibre, gotu kola, coquillo; entre otros “matojos” medicinales. Plátanos, guineos, ajíes, apio, yucas, yautías, hierbas aromáticas. Talleres y charlas sobre plantas medicinales, nutrición y cocina naturista, desintoxicación y agricultura amorosa y respetuosa del medio ambiente.  Cidra, PR mcalero55@gmail.com (787) 790-7975 / (787) 245-2653</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1607, 18.1752]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Culebra",
+                          "description": "<p>Orgánicos Culebrense Annabelle y Néstor Romero Certificada CNG Hierbas, lechugas, tomates, arúgula, pepinillos, berenjenas, calabazines y guineos. Culebra, PR belljoyh@gmail.com  (787) 909•4094</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.2870, 18.3187]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Dorado",
+                          "description": "<p>Ecocultivosabroso, Inc. Raúl (Eidan) Rodríguez  Hortalizas, plantas medicinales, composta vegetal, humus de lombrices y venta de lombrices. Talleres de lombri-composta y huertos ecológicos caseros. Dorado, PR ecocultivosabrosos@hotmail.com www.ecocultivosabrosos.wordpress.com (787) 309-6374</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.2826, 18.4391]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Guayama",
+                          "description": "<p>Finca La Monarca Rodolfo H. Salgado Certificada CNG Guineo, plátano, calabaza, batata, frutas y heliconias. rodysalgado@gmail.com (787) 300•9935</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1301, 18.0160]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Guayanilla",
+                          "description": "<p>La Siembra Natural Roberto J. Fernández Coffey Somos una siembra orgánica y un mercado agrícola natural en Ponce. Hacemos entrega de cosechas ecológicas, nuestras y de otros agricultores locales. También movemos queso y leche cruda, huevos orgánicos y pan (787)527-3839. www.blanconegroverde.com</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.7896, 18.0536]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Guaynabo",
+                          "description": "<p>Raíces y Lunas* Alberto Tirado y Caro Luna Tomates, plantas medicinales, hierbas y hortalizas. Guaynabo, PR 00969 info@raicesylunas.com www.raicesylunas.com(787 ) 637-0371 / (787) 237-4187</p><p>Vivero PJ Pedro Santiago Limones, chinas, toronjas, guanábanas, jobillos, orégano, sábila, albahaca, nopal, papayas y flores. Guaynabo, PR santiago_pedro@hotmail.com (787) 607-6985</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.1153, 18.3405]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Humacao",
+                          "description": "<p>Terra Natura Miguel Torres, Carmen Rodríguez y José Rivera Huevos orgánicos, frutas, plántulas, plantas medicinales, plátanos, guineos, humus de lombrices. Charlas educativas, talleres para niños, pintura y trabajo en huertos. Las Piedras, PR crodmarcano@gmail.com (787) 206-8894 / (787) 478-1084</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.8119, 18.1472]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Jayuya",
+                          "description": "<p>Finca Gripiñas Elena Biamón y Miguel P. Sastre Café Tureygua, guineos, plátanos, variedad de malangas y yautías, árboles frutales, cítricos, lerenes, apio y hortalizas.  Bo. Veguitas  Jayuya, PR finca.gripinas@gmail.com (787) 397-3243 / (787) 504-8648 </p><p> Hacienda Vista Hermosa Carlos E. Pacheco Café Supremo. Frutos menores, plátanos, guineos, yautías, ñames, apio y calabazas. Entrega a comercios. Bo. Salientito Jayuya, PR cpacheco@taispr.com www.taispr.com (787) 810-1061 / (787) 594-6550</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.5915, 18.2176]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Juncos",
+                          "description": "<p> La Hogaza...Pan Artesanal Gourmet Joanny Lozada Caraballo Panes Artesanales de: ñame, calabaza, nueces y pasas, maíz orgánico, romero, albahaca, “spelt”, garbanzo o frutas gluten free, multigranos, avena, tomate, budines sin azúcar, veganos, de trigo y sin trigo (GF), biscottis de almendras y granola artesanal. Juncos, PR lahogaza@gmail.com (787) 547-3889</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.9207, 18.2273]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Lajas",
+                          "description": "<p> Hacienda Netijuja Angel L. Lugo Vegetales, hierbas y frutas variadas. Carr. 117 Lajas, PR  angnegro@yahoo.com (787) 899-9326 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.0396, 18.0131]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Lares",
+                          "description": "<p>Proyecto Guayabacheri Gema,Augusto y Ubec Chinas, guineos, curcuma, plátanos, yautía, malanga, yuca y semillas. Lares, Barrio Espino, Sector El caballito flora.nativa26@gmail.com (787) 394•5652 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.8685, 18.2697]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Las Marías",
+                          "description": "<p>Finca La Cabaña Eduardo Rodríguez Miel y pique nativo. Las Marías, PR (787) 205•9021</p><p>Plenitud Iniciativa Eco-Educativa Alexandra de León, Cristina López, Norman Ramos, Owen Ingley, Paula Paoli Hojas verdes (col berza, hierbas aromáticas y medicinales, farináceos). Talleres de cocina vegetaría, talleres de agricultura ecológica, bio-construcción, sustentabilidad y permacultura. Las Marías, PR pplenitud@gmail.com www.plenitudpr.org (787) 806-7094 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.9928, 18.2503]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Luquillo",
+                          "description": "<p>Ruralía de la Costa a la Serranía Gregory Marcano Guineos, aguacates, yautías, albahaca, espinaca y ñame. Bo. Mata de Plátano Luquillo, PR gregomarcano@yahoo.com (787) 237-5668 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.7245, 18.2908]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Maricao",
+                          "description": "<p>Saluan Farm Sari Anduze Hierbas y elaboración de distintas combinaciones de teses medicinales, café, frutas y vegetales. Maricao, PR saluanFarm@yahoo.com www.SaluanFarm.com (340) 513-4000 / (787) 838-2568</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.9447, 18.1729]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Mayagüez",
+                          "description": '<p> Finca Cielo Verde Alessa Zaias Certificada CNG Mesclum, arúgula, hojas asiáticas, hierbas, variedad de repollos, berenjenas, pimientos, cebollines, remolachas, zanahorias, calabazas, pepinillos, calabazines y flores ornamentales exóticas. Alquiler de viveros y centro de actividades. Barrio Las Vegas Mayaguez, PR cieloverdepr@gmail.com www.cieloverdepr.blogspot.com (787) 342-5495</p>' +
+                          '<p>Finca Santiago Félix Santiago y Carmen M. Martínez Pulpa de mangó, dulce de mangó y jalea de mangó. Urb. Buenaventura Mayaguez, PR misanti2@yahho.com (787) 528-3782 / (787) 833-2981 </p><p>Govardhan Gardens Sadhu Govardhan Árboles de frutas exóticas y diversas especies de bambú.Consultoría en agroecología, talleres sobre crianza de cabras lecheras y venta de caprinasa. Barrio Bateyes Mayagüez, PR sadhu@coqui.net www.organicfarm.net (787) 832-0805</p><p>Granja Zaho Corp. Javier E. Rodríguez & Mari Doli Marrero Certificada CNG Germinados variados de alfalfa, mixto, grama de trigo y girasol. Bo. Rio Hondo Mayaguez, PR granjazaho@yahoo.com (939) 452-9749</p><p> Pachamama Bosque Jardín Magha García Medina Hojas para pasteles, tubérculos, hortalizas de temporada, ornamentales, frutas e hierbas. Bo. Leguisamo Mayagüez, PR jardinpachamama@gmail.com http://pachamamapr.blogspot.com (787) 387-3445</p>',
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.1467, 18.2003]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Moca",
+                          "description": "<p>Finca Plata Alta Real Rosita y Roberto Acevedo Certificada CNG Plátanos, chinas, berenjenas, viandas, plantas medicinales, flores de corte y ornamentales. Moca, PR flowerfarmrr@yahoo.com (787) 877•2167</p><p>Finca Terra Nostra Teresa Jiménez Yautía, yuca, plátano, guineo, pana y curcuma. Moca, PR teresajivega@hotmail.com (787) 691•9317 / (787) 877•6618 </p><p> Roger Farm Braulio Méndez Ñame, plátanos, yuca, medicinales y ornamentales. Moca, PR (787) 546•7060</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.0839, 18.3854]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Naranjito",
+                          "description": "<p>Finca El Rancho José R. Cruz Ortiz Hortalizas de temporada e hierbas. Bo.Guadiana Naranjito, PR rickyorganico@gmail.com (787) 359-3403 / 869-2576 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.2550, 18.2894]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Orocovis",
+                          "description": "<p>Finca la Abeja Pablo Díaz Comas Miel, pique, dulces, jugos, plantas culinarias, medicinales, frutales, caña y guineos. Orocovis, PR (787) 867-5561</p><p>Luis Felipe Alvarado Apio, malangas, yautías, plátanos y frutas. Bo. Bermejales Orocovis, PR (787) 867-5392 / 644-2118</p><p>Proyecto Agricultura en Armonía con el Ambiente Escuela S.U. Botijas #1 Dalma Cartagena Hortalizas, frutales y farináceos. Bo. Botijas Orocovis, PR dalma_58@yahoo.com(787) 867-2260</p><p>Proyecto Orgánico El Guaraguao Edgardo Alvarado Guineos, café, vegetales, chinas y huevos del país. Bo. Bermejales Orocovis, PR (787) 228-1407</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.4370, 18.2186]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Patillas",
+                          "description": "<p>Casa de la Selva Andrés Rua Madera del país y plántulas de árboles maderables por pedidos. Patillas PR andres@eyeontherainforest.org www.eyeontherainforest.org(787) 308-4588</p><p>Desde mi Huerto Raúl Rosado e Ivonne Reverón Plantas medicinales, hierbas, vegetales, huertos caseros, tierra, semillas y talleres de huertos caseros. Patillas, PR raul@desdemihuerto.com www.desdemihuerto.com (787) 271-3402 / 202-0392</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.0173, 18.0403]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Rincón",
+                          "description": "<p>Finca Joya Brava David C. Miller Certificada “USDA” Aguacates, mangos y otras frutas tropicales. Tomates y vegetales durante los meses de diciembre a mayo. Rincón, PR david@bkmiller.com (787) 823•1856</p><p>Huerto COAI Ricardo y Viviana Albarracín Hierbas, vegetales, frutas, plantas medicinales y aromáticas. Rincón, PR almacigopr@yahoo.com (787) 385•6999</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.2370, 18.3394]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Río Grande",
+                          "description": "<p> Doctor Árbol Carlos Montalvo Árboles de nim, moringa, chaya, guanábana y hojas mixtas.Talleres de sobrevivencia.Rio Grande, PR arbolistapaisajista@energiaverdepr.com www.energiaverde.com (787) 809-2946</p><p>Sueños con Paracelso María Elisa González de Todd Plátanos, malangas e hierbas aromáticas. Bo. Morovis Río Grande, PR (787) 888-5243</p> <p> Yummies for Tummies Jessica Herrera Repostería y panes orgánicos. Rio Grande, PR ratatule@aol.com (787) 314•0826</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.8272, 18.3567]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "San Germán",
+                          "description": "<p>Conuco del Coto Mariel Rivera y Ramón Agosto Hojas y otras hortalizas variadas. San Germán, PR conucodelcoto@gmail.com http://visitaelconuco.blogspot.com</p><p>Finca Familiar La Milagritos Zoraida Santiago, Quique Benet y Luis Benet Café Brazo de Oro, plátanos, aguacates, guineos, chinas, toronjas, pimientos, ají dulce, berenjenas, mezclum, yucca y yautía. San Germán, PR zoraida@fincalamilagritos.com www.fincalamilagritos.com (787) 899•9022 / (787) 486•4320</p><p> Proyecto Jíbaro Leo Estrada Ferrer Tomates, gandúles, repollo, pepinillos, pimientos morrones, calabazines y papayas. Talleres de huertos comunitarios en escuelas y comunidades. San Germán, PR (787) 376•6718 </p><p>Vanessa Rivera Panadería y repostería artesanal ovo-lacto-vegetariana, jugos y teses. San Germán, PR vanemage@hotmail.com (787) 232-6526</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-67.0355, 18.1145]
+                      }
+                  },
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "San Juan",
+                          "description": '<p> Apiario de Pancho Oswaldo Pérez y Waleska de Victoria Miel, miel cremada, cera de abeja y velas de cera de abejas. Bo. Cupey Alto San Juan, PR panchoperez64@hotmail.com (787) 406-7424 </p>' +
+                          '<p> El Huerto para mi Escuela Estudiantes Escuela Manuel Elzaburo Romero, albahaca, perejil, mejorana, menta, yerbabuena y plantas ornamentales. Talleres de siembra, composta y preparación de suelos. San Juan, PR (Canteras) elhuertoparamiescuela@gmail.com (787) 967-8751 / (787) 249-3300 </p>' +
+                          '<p> Julio Vallejo González Plantas medicinales y semillas orgánicas locales. Consultoría y adiestramientos en sistemas agroecológicos. San Juan, PR vallejo-gonzalez@gmail.com (787) 667-4119 </p>' +
+                          '<p>La Botica de la Tierra @ La Finca Citadina* Norysell Massanet Hortalizas, vinos frutales, lerenes, bambú y semillas orgánicas.San Juan, PR pajarilloverde@yahoo.com (787) 223-5976</p>' +
+                          '<p>Los Cocos Gustavo Dávila Cocos, agua de coco y postres crudistas. San Juan, PR (787) 781-8628 </p>' +
+                          '<p> Rafael M.Espasas & Tashia Howard Frutos menores, plátanos, berenjenas, habichuelas, ajíes dulces y pimientos. Viejo San Juan, PR rafa_espasas@hotmail.com (787) 309-4723 / (787) 243-7472</p>'
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.0569, 18.3745]
+                      }
+                  }
+                  ,
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "San Lorenzo",
+                          "description": "<p> Palo Verde Juan Taraza Hortalizas de temporada, chinas, limones, papayas y calabazas. Bo. Quemados San Lorenzo, PR paloverde26@yahoo.com (787) 405-5693 / (787) 789-8383 </p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.9744, 18.1549]
+                      }
+                  }
+                  ,
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Toa Alta",
+                          "description": "<p>Finca Josco Bravo Ian Pagán Roig Jugos de frutas orgánicos (guayaba, guanábana. carambola, pomarrosa, mamey, limón, jobo, acerola, parcha y otros) miel, plátanos, guineos manzanos, lechugas, perejil, bok choi, cilantrillo, malangas, yautías, pepinillo, panas, panas de pepita. Asesoría en agricultura ecológica y composta. Servicios de apicultura. Villas del Toa Toa Alta, PR iank_organico@hotmail.com (787) 424-0145 / (787)797-4634 </p> <p> Villa Paco Antonio Rullán, Edgardo Tomos, Juan Carlos Samalot, Jorge Lázaro, Fernando Samalot y John Rullán. Té de Moringa oliefera orgánico.Talleres de huertos caseros y cocina vegetariana. Bo. Monte Lago Toa Alta, PR antoniorullan@hotmail.com www.bensanapr.com (787) 232-6465 / (787)309-3454</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.2536, 18.3660]
+                      }
+                  }
+                  ,
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Utuado",
+                          "description": '<p>El Batey del Cemí Jorge Pérez Veve Guineos, chinas, limones, yautías, malangas, carambolas, panas, guayabas, aguacates, plátanos, cúrcuma y bambú. Bo. Ángeles Utuado, PR elbateydelcemi@yahoo.com www.bateydelcemi.com (787) 383-3096 / (787) 484-3860</p>' +
+                          '<p>El Conuco de Caguana Pluma Bárbara Berenjenas, calabazas, frijoles, gandules, plátanos, guineos, aguacates, carambolas, chinas, toronjas, papayas, ajíes dulces, verdes y plantas medicinales. Bo. Caguana Utuado, PR plumabarbara@gmail.com (787) 380-2996 </p>' +
+                          '<p> Finca El Semillero Juan Pagán Teitelbaum Batata, malanga, yautía, guineos, plátanos, gengibre, cúrcuma, vegetales de ensalada, piña, cítricos, cacao y guanábana. Utuado, PR buruquena@gmail.com www.neojibaro.org (939)247-7974</p>' +
+                          '<p>Finca La Montaña Mariposa Reinaldo Cruz y Catherine Jones Frijoles, yuca, calabazas y vegetales. Talleres de permacultura. Bo. Roncador Utuado, PR lamontanamariposa@gmail.com http://lamontanamariposa.wordpress.com (787)567-4360</p>' +
+                          '<p> Finca Pedro Gordo Peter Vanilla y Susan Harlow Café y frutales. Bo. Don Alonso Utuado, PR harlowbanyai@hotmail.com (787) 894-1667 </p>' +
+                          '<p>Finca Río Limón Yanna M. Muriel Frutas, vegetales e hierbas variadas. Utuado, PR ymuriel@gmail.com (787) 894•0024 </p>' +
+                          '<p> Hacienda Gabriela Isaac Hernández Plátanos, guineos, yautías, maíz, habichuelas y ajíes dulces. Sector Bateyes Utuado, PR (787) 814-4594 / 307-5964 </p>' +
+                          '<p> La Tierra del Bajarí Adrián M. Jordán García Certificada CNG Vegetales, habichuelas, hierbas y viandas. Bo. Roncales Utuado, PR latierradelbajari@yahoo.com (787) 516-6412 </p>'
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-66.7006, 18.2654]
+                      }
+                  }
+                  ,
+                  {
+                      "type": "Feature",
+                      "properties": {
+                          "name": "Yabucoa",
+                          "description": "<p>Finca Ecológica El Guajonal* Armando “Nano” Feliciano Vegetales y viandas. Yabucoa, PR nativoborincano@hotmail.com (787) 405•0068</p>",
+                      },
+                      "geometry": {
+                          "type": "Point",
+                          "coordinates": [-65.8870, 18.0729]
+                      }
+                  }
+                  ]
+              }
+          },
+          "layout": {
+              "icon-image": "park-15",
+              "icon-allow-overlap": true
+          }
+          // "paint": {
+          //   "circle-radius": 8,
+          //   "circle-color": "#007cbf"
+          // }
+      });
+
+      map.addSource('single-point', {
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": []
+        }
+      });
+
+      map.addLayer({
+          "id": "point",
+          "source": "single-point",
+          "type": "circle",
+          "paint": {
+              "circle-radius": 10,
+              "circle-color": "#007cbf"
+          }
+      });
+
+      // Listen for the `geocoder.input` event that is triggered when a user
+      // makes a selection and add a symbol that matches the result.
+      geocoder.on('result', function(ev) {
+          map.getSource('single-point').setData(ev.result.geometry);
+      });
+
+    });
+
+      // Create a popup, but don't add it to the map yet.
+    var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'places', function(e) {
+      // Change the cursor style as a UI indicator.
+      map.getCanvas().style.cursor = 'pointer';
+
+      // Populate the popup and set its coordinates
+      // based on the feature found.
+      popup.setLngLat(e.features[0].geometry.coordinates)
+        .setHTML('<strong>' + e.features[0].properties.name + '</strong>' + e.features[0].properties.description)
+        .addTo(map);
+    });
+
+    map.on('mouseleave', 'places', function() {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    });
+
+
+
+  </script>
+
+</body>
+</html>
